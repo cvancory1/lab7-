@@ -12,18 +12,18 @@ clean:
 	rm -f main
 
 com:
-	git push origin main
+	git push origin master
 
 
 all:
 	git add -u
 	git commit -m "same"
-	git push origin main
+	git push origin master
 	
 stab:
 	git add -u
 	git commit -m "Stable copy"
-	git push origin main
+	git push origin master
 
 pull:
 	git pull
