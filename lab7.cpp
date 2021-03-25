@@ -19,14 +19,8 @@ Goals:  studying hash functions
 #include<unistd.h>
 #include<cmath>
 #include <string>
-
-// #define W 32 // , smaller than the word size of the machine
-// #define P 20 // smaller than W but not too small
-// // #define A 5463458053 //10 digit prime number
-// #define A 4 // prime num 
-
-
-
+#include <string.h>
+#include <iomanip>
 
 
 using namespace std;
@@ -35,12 +29,12 @@ using namespace std;
 //     x << y gives value of x * 2^y
 //     x >> y gives value of x / 2^y
 //returns ⌊(ax mod 2w)/2w−p⌋ by using the shift operator .. works on the bit level 
-size_t Hash (  size_t key){
+size_t Hash ( size_t key){
         
 
   size_t p = 10;// smaller than W but not too small
   size_t w = 32;// , smaller than the word size of the machine
-  double A = 0.61803398; // prime num 
+  double A = 0.5463458053; // prime num 
 
   size_t one = 1; // get 1 as a size_t
   printf ( "A=%lu\n",A);
@@ -75,7 +69,7 @@ size_t Hash (  size_t key){
   return res;
 
 }
-size_t text2int(char* str){
+size_t text2int(  char* str){
   /*
    * One way: take each character as an ASCII
    * value, but then interpret the string as a
@@ -104,46 +98,151 @@ size_t text2int(char* str){
   return sum;
 }
 
-size_t strToInt( char * str){
-    srand(time(0));
+
+
+size_t myHash1( const char * str){
     
-    // makes 10 digits long 
-    // 
-   
-
+  size_t fact = 7*6*5*4*3;
   int length = strlen(str);
-  size_t randomLetter= rand()%128;
-//   char *str2 = strcat(str, )
 
-// do something backwards
-// and make eveerything a standard length of 32
-  for(int i = strlen(str); i > 0; i--){
-        cout<< "start of print"<<endl;
-        cout<<str[i]+10<<endl;
+  if(length ==1 ){
+    return (str[0] * fact) %1299;
+
+  }else if (length>=20){
+    length =20;
   }
 
+  size_t hashVal=1;
+  size_t one = 1;
+  for(int i = 0 ; i <length-2 ; i++){
+    size_t ch = str[i];
+    size_t next = str[i+1];
 
+    hashVal+=  (ch+next)^1;
+  
+  }
 
-//   for(int i = 0; i<strlen(str2); i++){
-//         cout<< "start of print"<<endl;
-//       cout<<str2[i]<<endl;
-//   }
-
-//   return str2;
+  return hashVal;
         
 }
 
-int main(){
-//   char * str ={"C"};
-//   cout<< "str to int"<<text2int(str)<<endl;
-//   cout<<endl;
- 
-//   Hash(4112);
+size_t myHash2( const char * str){
+  size_t hashVal=1.0;
 
-  char * str2= strToInt("H");
-//   for(int i = 0; i<strlen(str2); i++){
-//       cout<<str2[i]<<endl;
-//   }
+  int length = strlen(str);
+
+  if(length >= 20 ){
+    char prefix[10];
+    for(int i = 0 ; i <10 ; i++){
+      prefix[i]=  str[i];
+    } 
+
+    char suffix[10];
+    for(int i = length-11,  j=0; i <length ; i++, j++){
+      suffix[j] =  str[i];
+    } 
+
+    hashVal = myHash1(prefix);
+    hashVal += myHash1(suffix);
+
+    return hashVal % 100000;
+
+
+  }else if(length==1){
+    hashVal = str[0] * 17; 
+  }
+
+  for(int i = 0 ; i <length ; i++){
+    hashVal *=  str[i];
+  }  
+  hashVal= hashVal<< 3;
+
+  return hashVal% 100000;
+  
+   
+}
+
+void printHex( size_t num){
+
+}
+
+
+int main(int argc, char** argv){
+
+
+ size_t hashedVal= myHash1("A");
+  cout<<hex<<hashedVal<<endl;
+
+  hashedVal= myHash1("B");
+  cout<<hex<<hashedVal<<endl;
+
+   hashedVal= myHash1("C");
+  cout<<hex<<hashedVal<<endl;
+
+   hashedVal= myHash1("dog");
+  cout<<hex<<hashedVal<<endl;
+
+   hashedVal= myHash1("DOG");
+  cout<<hex<<hashedVal<<endl;
+
+   hashedVal= myHash1("god");
+  cout<<"hashedVal<<"<<hashedVal<<endl; 
+  
+  hashedVal= myHash1("GOD");
+  cout<<hex<<hashedVal<<endl;
+
+
+  hashedVal= myHash1("abbbasbadzasdfadsfadsads");
+  cout<<"hashedVal<<"<<hashedVal<<endl; 
+  
+  hashedVal= myHash1("bumble bee");
+  cout<<hex<<hashedVal<<endl;
+
+  hashedVal= myHash1("zzzzzzzzzzzzzzzzzzz");
+  cout<<hex<<hashedVal<<endl;
+ 
+  cout<<"---------Testing second hash---------"<<endl;
+
+  // hashedVal= myHash2("A");
+  // cout<<hex<<hashedVal<<endl;
+
+  // hashedVal= myHash2("B");
+  // cout<<hex<<hashedVal<<endl;
+
+  // hashedVal= myHash2("C");
+  // cout<<hex<<hashedVal<<endl;
+
+  // hashedVal= myHash2("dog");
+  // cout<<hex<<hashedVal<<endl;
+
+  // hashedVal= myHash2("DOG");
+  // cout<<hex<<hashedVal<<endl;
+
+  // hashedVal= myHash2("god");
+  // cout<<"hashedVal<<"<<hashedVal<<endl; 
+
+  // hashedVal= myHash2("GOD");
+  // cout<<hex<<hashedVal<<endl;
+
+
+  // hashedVal= myHash2("abbbasbadzasdfadsfadsads");
+  // cout<<"hashedVal<<"<<hashedVal<<endl; 
+
+  // hashedVal= myHash2("bumble bee");
+  // cout<<hex<<hashedVal<<endl;
+
+  hashedVal= myHash2("zzzzzzzzzzzzzzzzzzzz");
+  cout<<hex<<hashedVal<<endl;
+
+  // char * str = argv[1];
+  // printf("String in base-128 is: %lu...\n", text2int(str));
+
+  //   printf("Hash result: %lu\n", Hash(text2int(str)));
+
+
+  cout<<hex<<1500<<"\nhere\n"<<endl;
+
+  return 0;
 
 
 }
